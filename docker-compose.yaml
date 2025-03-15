@@ -1,0 +1,42 @@
+services:
+  # app:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: SpringDocker
+  #   networks:
+  #     - springdocker-net
+  #   restart: on-failure
+  #   depends_on: 
+  #     mysql_app:
+  #       condition: service_healthy
+  #   environment:
+  #     MYSQL_HOST: mysql_app
+  #     MYSQL_USER: user_springdocker
+  #     MYSQL_PASSWORD: Springdocker123456?xyz
+  #     MYSQL_PORT: 3306
+      
+  mysql_app:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    expose:
+      - 3306
+    environment:
+      MYSQL_DATABASE: springdocker_db
+      MYSQL_ROOT_PASSWORD: secret2005
+      MYSQL_PASSWORD: Springdocker123456?xyz
+    networks:
+      - springdocker-net
+    volumes:
+      - ./src/main/resource/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      timeout: 30s
+# ======================== Global ========================
+networks:
+  springdocker-net:
+    driver: bridge
